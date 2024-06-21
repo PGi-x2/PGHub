@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PGHub.API.DTOs.Post;
 using PGHub.DataPersistance;
 using PGHub.Domain.Entities;
@@ -19,12 +20,25 @@ namespace PGHub.API.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(Guid id)
         {
-            var post = new Post
+            var post = _dataContext.Posts.Find(id);
+
+            if (id == null)
             {
-                Id = id
+                return NotFound();
+            }
+
+            var postDTO = new PostDTO
+            {
+                Id = id,
+                AuthorId = post.AuthorId,
+                Title = post.Title,
+                Body = post.Body,
+                IsPined = post.IsPined,
+                CreationDate = post.CreationDate,
+                DeletionDate = post.DeletionDate
             };
 
-            return Ok();
+            return Ok(post);
         }
 
 
@@ -51,23 +65,32 @@ namespace PGHub.API.Controllers
                 });
             }
 
+            _dataContext.Posts.Add(post);
+            _dataContext.SaveChanges();
+
             return Ok();
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdatePost(Guid id, UpdatePostDTO updatePostDTO)
         {
-            var post = new Post
-            {
-                Id = id,
-                Title = updatePostDTO.Title,
-                Body = updatePostDTO.Body,
-                IsPined = updatePostDTO.IsPined,
-                DeletionDate = updatePostDTO.DeletionDate,
-                
-            };
+            var post = _dataContext.Posts.Find(id);
 
-            foreach(var attachmentDTO in updatePostDTO.Attachments)
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            //var post = new Post();
+
+            post.Id = id;
+            post.Title = updatePostDTO.Title;
+            post.Body = updatePostDTO.Body;
+            post.IsPined = updatePostDTO.IsPined;
+            post.DeletionDate = updatePostDTO.DeletionDate;
+
+
+            foreach (var attachmentDTO in updatePostDTO.Attachments)
             {
                 post.Attachments.Add(new Attachment
                 {
@@ -75,6 +98,8 @@ namespace PGHub.API.Controllers
                     Id = attachmentDTO.Id,
                 });
             }
+
+            _dataContext.SaveChanges();
 
             return Ok();
         }
@@ -84,10 +109,16 @@ namespace PGHub.API.Controllers
         {
             // need repository to check if the post exists in the DB
             // Delete should have its own DTO?
-            var post = new Post
+
+            var post = _dataContext.Posts.Where(p => p.Id == id).Include(p => p.Attachments).FirstOrDefault();
+
+            if (post == null)
             {
-                Id = id
-            };
+                return NotFound();
+            }
+
+            _dataContext.Posts.Remove(post);
+            _dataContext.SaveChanges();
 
             return NoContent();
         }

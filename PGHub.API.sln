@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PGHub.Application", "PGHub.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{6787B3B7-558B-49F8-B6C3-48E830973ED7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PGHub.DataPersistance", "PGHub.DataPersistance\PGHub.DataPersistance.csproj", "{E122DA14-25E2-4329-A058-F4CA5463615B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PGHub.DataPersistance", "PGHub.DataPersistance\PGHub.DataPersistance.csproj", "{E122DA14-25E2-4329-A058-F4CA5463615B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

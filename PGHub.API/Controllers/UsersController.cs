@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PGHub.API.DTOs.User;
 using PGHub.DataPersistance;
+using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
 
 namespace PGHub.API.Controllers
@@ -10,21 +11,35 @@ namespace PGHub.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly DataContext _dataContext;
+        private readonly IUsersRepository _usersRepository;
 
-        public UsersController(DataContext dataContext)
+        public UsersController(DataContext dataContext, IUsersRepository usersRepository)
         {
             _dataContext = dataContext;
+            _usersRepository = usersRepository;
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(Guid id)
         {
-            var users = new User
+            var user = _usersRepository.Find(id);
+
+           //var user = _dataContext.Users.Find(id);
+
+            if (id == null)
             {
-                Id = id
+                return NotFound();
+            }
+
+            var userDTO = new UserDTO
+            {
+                Id = id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
             };
 
-            return Ok();
+            return Ok(userDTO);
         }
 
         [HttpPost]
@@ -44,15 +59,21 @@ namespace PGHub.API.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateUser(Guid id, UpdateUserDTO updateUserDTO)
         {
-            var user = new User
-            {
-                Id = id,
-                FirstName = updateUserDTO.FirstName,
-                LastName = updateUserDTO.LastName,
-                Email = updateUserDTO.Email,
-            };
 
-            return Ok();
+            var user = _dataContext.Users.Find(id);
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            user.FirstName = updateUserDTO.FirstName;
+            user.LastName = updateUserDTO.LastName;
+            user.Email = updateUserDTO.Email;
+
+            _dataContext.SaveChanges();
+
+            return Ok(user);
         }
 
         [HttpDelete("{id}")]
@@ -60,10 +81,15 @@ namespace PGHub.API.Controllers
         {
             // need repository to check if the user exists in the DB
             // Delete should have its own DTO?
-            var user = new User
+            var user = _dataContext.Users.Find(id);
+
+            if (id == null)
             {
-                Id = id
-            };
+                return NotFound();
+            }
+
+            _dataContext.Users.Remove(user);
+            _dataContext.SaveChanges();
 
             return NoContent();
         }
