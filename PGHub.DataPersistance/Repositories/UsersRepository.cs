@@ -15,5 +15,35 @@ namespace PGHub.DataPersistance.Repositories
         {
             return _dataContext.Users.Find(id);
         }
+
+        public User Create(User user)
+        {
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            return user;
+        }
+
+        public User Update(User user)
+        {
+            _dataContext.SaveChanges();
+
+            return user;
+        }
+
+        public bool Delete(Guid id)
+        {
+
+            var user = _dataContext.Users.Find(id);
+
+            if (user != null) 
+            { 
+                _dataContext.Users.Remove(user);
+                _dataContext.SaveChanges();
+                return true;
+            }
+
+            return false;
+        }
     }
 }

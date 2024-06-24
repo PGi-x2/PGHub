@@ -24,9 +24,9 @@ namespace PGHub.API.Controllers
         {
             var user = _usersRepository.Find(id);
 
-           //var user = _dataContext.Users.Find(id);
+            //var user = _dataContext.Users.Find(id);
 
-            if (id == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -50,8 +50,10 @@ namespace PGHub.API.Controllers
             user.LastName = createUserDTO.LastName;
             user.Email = createUserDTO.Email;
 
-            _dataContext.Users.Add(user);
-            _dataContext.SaveChanges();
+            //_dataContext.Users.Add(user);
+            //_dataContext.SaveChanges();
+
+            var createUser = _usersRepository.Create(user);
 
             return Ok();
         }
@@ -62,7 +64,7 @@ namespace PGHub.API.Controllers
 
             var user = _dataContext.Users.Find(id);
 
-            if (id == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -71,27 +73,36 @@ namespace PGHub.API.Controllers
             user.LastName = updateUserDTO.LastName;
             user.Email = updateUserDTO.Email;
 
-            _dataContext.SaveChanges();
+            //_dataContext.SaveChanges();
+            var updateUser = _usersRepository.Update(user);
 
             return Ok(user);
         }
 
+        //Hard Delete
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(Guid id)
         {
-            // need repository to check if the user exists in the DB
-            // Delete should have its own DTO?
-            var user = _dataContext.Users.Find(id);
+            bool user;
 
-            if (id == null)
+            try
             {
-                return NotFound();
+                user = _usersRepository.Delete(id);
+
+                if (user == false)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return NoContent();
+                }
             }
+            catch (Exception)
+            {
+                throw;
 
-            _dataContext.Users.Remove(user);
-            _dataContext.SaveChanges();
-
-            return NoContent();
+            }
         }
     }
 }
