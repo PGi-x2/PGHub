@@ -6,11 +6,13 @@ namespace PGHub.DataPersistance.Repositories
     {
         private readonly DataContext _dataContext;
 
+        // The DataContext (instance of it) is injected into the repository through the constructor
         public UsersRepository(DataContext dataContext)
         {
             _dataContext = dataContext;
         }
 
+        // ? is used to indicate that the return type can be null
         public User? Find(Guid id)
         {
             return _dataContext.Users.Find(id);

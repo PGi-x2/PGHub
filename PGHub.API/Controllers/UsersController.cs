@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using PGHub.API.DTOs.User;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
@@ -12,11 +13,13 @@ namespace PGHub.API.Controllers
     {
         private readonly DataContext _dataContext;
         private readonly IUsersRepository _usersRepository;
+        private readonly IMapper _mapper;
 
-        public UsersController(DataContext dataContext, IUsersRepository usersRepository)
+        public UsersController(DataContext dataContext, IUsersRepository usersRepository, IMapper mapper)
         {
             _dataContext = dataContext;
             _usersRepository = usersRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("{id}")]
@@ -24,20 +27,12 @@ namespace PGHub.API.Controllers
         {
             var user = _usersRepository.Find(id);
 
-            //var user = _dataContext.Users.Find(id);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            var userDTO = new UserDTO
-            {
-                Id = id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName
-            };
+            UserDTO userDTO = _mapper.Map<UserDTO>(user);
 
             return Ok(userDTO);
         }
@@ -45,17 +40,19 @@ namespace PGHub.API.Controllers
         [HttpPost]
         public IActionResult CreateUser(CreateUserDTO createUserDTO)
         {
-            var user = new User();
-            user.FirstName = createUserDTO.FirstName;
-            user.LastName = createUserDTO.LastName;
-            user.Email = createUserDTO.Email;
+            // Mapping from CreateUserDTO to User
+            var userEntity = _mapper.Map<User>(createUserDTO);
 
-            //_dataContext.Users.Add(user);
-            //_dataContext.SaveChanges();
+            // Create the user in the database / repository
+            var user = _usersRepository.Create(userEntity);
 
-            var createUser = _usersRepository.Create(user);
+            // Mapping from User entity back to UserDTO to return it in the response
+            var userDTO = _mapper.Map<UserDTO>(user);
 
-            return Ok();
+            // CreatedAtAction is a method provided by ControllerBase 
+            // CreatedAtAction returns a 201 status code with the location of the created resource
+            // nameof operator is used to get the name of the GetById method as a string that will be used to genereate the URL for Location header
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, userDTO);
         }
 
         [HttpPut("{id}")]
