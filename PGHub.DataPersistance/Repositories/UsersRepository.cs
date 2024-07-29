@@ -28,8 +28,22 @@ namespace PGHub.DataPersistance.Repositories
 
         public User Update(User user)
         {
-            _dataContext.SaveChanges();
+            // Check if the guid exists in the DB
+            var userDb = _dataContext.Users.Find(user.Id);
 
+            if (userDb != null)
+            {
+                // Entry(userDb).CurretValues gets the current property values from the entity (basically from the client)
+                // SetValues(user) will set the values of user with the values from userDb
+                _dataContext.Entry(userDb).CurrentValues.SetValues(user);
+                _dataContext.SaveChanges();
+            }
+            else
+            {
+                // need to improve this
+                return null;
+            }
+            
             return user;
         }
 
