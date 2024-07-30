@@ -14,12 +14,14 @@ namespace PGHub.API.Controllers
         private readonly DataContext _dataContext;
         private readonly IUsersRepository _usersRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(DataContext dataContext, IUsersRepository usersRepository, IMapper mapper)
+        public UsersController(DataContext dataContext, IUsersRepository usersRepository, IMapper mapper, ILogger<UsersController> logger)
         {
             _dataContext = dataContext;
             _usersRepository = usersRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("{id}")]
@@ -59,20 +61,13 @@ namespace PGHub.API.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateUser(Guid id, UpdateUserDTO updateUserDTO)
         {
-            //var user = _dataContext.Users.Find(id);
-
-            //if (user == null)
-            //{
-            //    return NotFound();
-            //}
-
             // Mapping from UpdateUserDTO to User
             var userEntity = _mapper.Map<User>(updateUserDTO);
 
             // Update the user in the DB via the repository
             var updatedUser = _usersRepository.Update(userEntity);
 
-            // need to cath the null guid when is the case -> TODO
+            // TODO: need to cath the null guid when is the case
 
             // Map back from User entity to UpdateUserDto to return it in the response
             var userDTO = _mapper.Map<UpdateUserDTO>(updatedUser);
@@ -84,25 +79,30 @@ namespace PGHub.API.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(Guid id)
         {
-            bool user;
+            bool isDeleted;
 
             try
             {
-                user = _usersRepository.Delete(id);
+                // assign the value of the user repository to this user variable
+                isDeleted = _usersRepository.Delete(id);
 
-                if (user == false)
+                if (isDeleted == false)
                 {
                     return NotFound();
                 }
                 else
                 {
+                    // Return a 204 status code to indicate that the user was deleted successfully
                     return NoContent();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                // Log the exception
+                _logger.LogError(ex, "An error occured while deleting the user with the ID: {UserId}", id);
 
+                // Return a 500 status code to be more specific
+                return StatusCode(500, "An error occured while deleting the user");
             }
         }
     }
