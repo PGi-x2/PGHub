@@ -19,7 +19,7 @@ namespace PGHub.DataPersistance.Repositories
 
         public IEnumerable<Post> GetAll()
         {
-            return _dataContext.Posts;
+            return _dataContext.Posts.Include(p => p.Attachments);
         }
 
         public Post Create(Post post)
