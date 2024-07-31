@@ -18,6 +18,11 @@ namespace PGHub.DataPersistance.Repositories
             return _dataContext.Users.Find(id);
         }
 
+        public IEnumerable<User> GetAll()
+        {
+            return _dataContext.Users;
+        }
+
         public User Create(User user)
         {
             _dataContext.Users.Add(user);
@@ -33,8 +38,8 @@ namespace PGHub.DataPersistance.Repositories
 
             if (userDb != null)
             {
-                // Entry(userDb).CurretValues gets the current property values from the entity (basically from the client)
-                // SetValues(user) will set the values of user with the values from userDb
+                // Entry(userDb).CurrentValues gets the current property values from the entity / db
+                // SetValues(user) will update the values of userDb with the values from user
                 _dataContext.Entry(userDb).CurrentValues.SetValues(user);
                 _dataContext.SaveChanges();
             }
@@ -43,7 +48,7 @@ namespace PGHub.DataPersistance.Repositories
                 // need to improve this
                 return null;
             }
-            
+
             return user;
         }
 
@@ -52,8 +57,8 @@ namespace PGHub.DataPersistance.Repositories
 
             var user = _dataContext.Users.Find(id);
 
-            if (user != null) 
-            { 
+            if (user != null)
+            {
                 _dataContext.Users.Remove(user);
                 _dataContext.SaveChanges();
                 return true;

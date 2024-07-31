@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PGHub.API.DTOs.Post;
 using PGHub.DataPersistance;
+using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
 
 namespace PGHub.API.Controllers
@@ -11,10 +13,16 @@ namespace PGHub.API.Controllers
     public class PostsController : ControllerBase
     {
         private readonly DataContext _dataContext;
+        private readonly IPostsRepository _postsRepository;
+        private readonly IMapper _mapper;
+        private readonly ILogger<PostsRepository> _logger;
 
-        public PostsController(DataContext dataContext)
+        public PostsController(DataContext dataContext, IPostsRepository postsRepository, IMapper mapper, ILogger<PostsRepository> logger)
         {
             _dataContext = dataContext;
+            _postsRepository = postsRepository;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("{id}")]
@@ -22,39 +30,35 @@ namespace PGHub.API.Controllers
         {
             var post = _dataContext.Posts.Find(id);
 
-            if (id == null)
+            // TODO:To add validators to check if the post(guid) exists in the DB
+            if (post == null)
             {
                 return NotFound();
             }
 
-            var postDTO = new PostDTO
-            {
-                Id = id,
-                AuthorId = post.AuthorId,
-                Title = post.Title,
-                Body = post.Body,
-                IsPined = post.IsPined,
-                CreationDate = post.CreationDate,
-                DeletionDate = post.DeletionDate
-            };
+            // This maps the properties of the post object to a new instance of the PostDTO class.
+            // Maps the properties from domain entity to the DTO object that can be displayed to the client
+            var postDTO = _mapper.Map<PostDTO>(post);
 
-            return Ok(post);
+            return Ok(postDTO);
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var posts = _dataContext.Posts.Include(p => p.Attachments);
+
+            var postDTOs = _mapper.Map<IEnumerable<PostDTO>>(posts);
+
+            return Ok(postDTOs);
         }
 
 
         [HttpPost]
         public IActionResult CreatePost(CreatePostDTO createPostDTO)
         {
-            var post = new Post
-            {
-                Id = createPostDTO.Id,
-                AuthorId = createPostDTO.AuthorId,
-                Title = createPostDTO.Title,
-                Body = createPostDTO.Body,
-                IsPined = createPostDTO.IsPined,
-                CreationDate = createPostDTO.CreationDate,
-                DeletionDate = createPostDTO.DeletionDate,
-            };
+            // Maps the properties from the DTO object to the domain entity
+            var post = _mapper.Map<Post>(createPostDTO);
 
             foreach (var attachmentDTO in createPostDTO.Attachments)
             {
@@ -65,62 +69,62 @@ namespace PGHub.API.Controllers
                 });
             }
 
-            _dataContext.Posts.Add(post);
-            _dataContext.SaveChanges();
+            // Creates the post in the database / repository
+            var createdPost = _postsRepository.Create(post);
 
-            return Ok();
+            // Maps the properties from the domain entity back to the DTO object to return it in the response
+            var postDTO = _mapper.Map<PostDTO>(createdPost);
+
+            return CreatedAtAction(nameof(GetById), new { id = createdPost.Id }, postDTO);
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdatePost(Guid id, UpdatePostDTO updatePostDTO)
         {
-            var post = _dataContext.Posts.Find(id);
+            var existingPost = _mapper.Map<Post>(updatePostDTO);
 
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            //var post = new Post();
-
-            post.Id = id;
-            post.Title = updatePostDTO.Title;
-            post.Body = updatePostDTO.Body;
-            post.IsPined = updatePostDTO.IsPined;
-            post.DeletionDate = updatePostDTO.DeletionDate;
-
+            existingPost.Attachments.Clear();
 
             foreach (var attachmentDTO in updatePostDTO.Attachments)
             {
-                post.Attachments.Add(new Attachment
+                existingPost.Attachments.Add(new Attachment
                 {
                     FileName = attachmentDTO.FileName,
                     Id = attachmentDTO.Id,
                 });
             }
 
-            _dataContext.SaveChanges();
+            var updatedPost = _postsRepository.Update(existingPost);
 
-            return Ok();
+            var postDTO = _mapper.Map<UpdatePostDTO>(updatedPost);
+
+            return Ok(postDTO);
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeletePost(Guid id)
         {
-            // need repository to check if the post exists in the DB
-            // Delete should have its own DTO?
+            bool isDeleted;
 
-            var post = _dataContext.Posts.Where(p => p.Id == id).Include(p => p.Attachments).FirstOrDefault();
-
-            if (post == null)
+            try
             {
-                return NotFound();
+                isDeleted = _postsRepository.Delete(id);
+
+                if (!isDeleted)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return NoContent();
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while deleting the post with the ID: {PostId}", id + ".");
 
-            _dataContext.Posts.Remove(post);
-            _dataContext.SaveChanges();
-
-            return NoContent();
+                return StatusCode(500, "An error occured while deleting the post.");
+            }
         }
 
     }

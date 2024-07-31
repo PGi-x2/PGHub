@@ -4,6 +4,7 @@ using PGHub.API.DTOs.User;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
+using System.Collections.Generic;
 
 namespace PGHub.API.Controllers
 {
@@ -29,14 +30,29 @@ namespace PGHub.API.Controllers
         {
             var user = _usersRepository.Find(id);
 
+            // TODO:To add validators to check if the user(guid) exists in the DB
             if (user == null)
             {
                 return NotFound();
             }
 
-            UserDTO userDTO = _mapper.Map<UserDTO>(user);
+            //UserDTO userDTO = _mapper.Map<UserDTO>(user);
+            var userDTO = _mapper.Map<UserDTO>(user);
 
             return Ok(userDTO);
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var users = _usersRepository.GetAll();
+
+            // is it better to assign the value of the mapping to a variable or to return it directly?
+            // better to assign the value of the mapping to a variable for better readability, debugging and testing and to perform necessary validation or manipulation before returning it
+            // IEnumerable<UserDTO> usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
+            var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
+
+            return Ok(usersDTO);
         }
 
         [HttpPost]
@@ -99,10 +115,10 @@ namespace PGHub.API.Controllers
             catch (Exception ex)
             {
                 // Log the exception
-                _logger.LogError(ex, "An error occured while deleting the user with the ID: {UserId}", id);
+                _logger.LogError(ex, "An error occured while deleting the user with the ID: {UserId}", id + ".");
 
                 // Return a 500 status code to be more specific
-                return StatusCode(500, "An error occured while deleting the user");
+                return StatusCode(500, "An error occured while deleting the user.");
             }
         }
     }
