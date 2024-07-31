@@ -81,10 +81,17 @@ namespace PGHub.API.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdatePost(Guid id, UpdatePostDTO updatePostDTO)
         {
-            var existingPost = _mapper.Map<Post>(updatePostDTO);
+            // Retrieve the existing post from the repository
+            var existingPost = _postsRepository.Find(id);
+            if (existingPost == null)
+            {
+                return NotFound();
+            }
 
+            _mapper.Map(updatePostDTO, existingPost);
+
+            // Clear the existing attachments and add the new ones
             existingPost.Attachments.Clear();
-
             foreach (var attachmentDTO in updatePostDTO.Attachments)
             {
                 existingPost.Attachments.Add(new Attachment
@@ -94,8 +101,10 @@ namespace PGHub.API.Controllers
                 });
             }
 
+            // Update the post in the DB via the repository
             var updatedPost = _postsRepository.Update(existingPost);
 
+            // Map back from Post entity to UpdatePostDto to return it in the response / client
             var postDTO = _mapper.Map<UpdatePostDTO>(updatedPost);
 
             return Ok(postDTO);
