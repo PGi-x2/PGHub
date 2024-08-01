@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PGHub.API.DTOs.Post;
+using PGHub.Common.DTOs.Post;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
 
-namespace PGHub.API.Controllers
+namespace PGHub.Common.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -73,6 +73,7 @@ namespace PGHub.API.Controllers
             // Creates the post in the database / repository
             var createdPost = _postsRepository.Create(post);
 
+            // TODO: Need to return this via the GetById Method that will have the mapping from domain entity to DTO
             // Maps the properties from the domain entity back to the DTO object to return it in the response
             var postDTO = _mapper.Map<PostDTO>(createdPost);
 

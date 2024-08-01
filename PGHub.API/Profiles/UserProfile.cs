@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using PGHub.API.DTOs.User;
+using PGHub.Common.DTOs.User;
 using PGHub.Domain.Entities;
 
-namespace PGHub.API.Profiles
+namespace PGHub.Common.Profiles
 {
     public class UserProfile : Profile
     {

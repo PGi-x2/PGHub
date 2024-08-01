@@ -1,4 +1,4 @@
-namespace PGHub.API
+namespace PGHub.Common
 {
     public class WeatherForecast
     {

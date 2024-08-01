@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PGHub.Application\PGHub.Application.csproj" />
     <ProjectReference Include="..\PGHub.DataPersistance\PGHub.DataPersistance.csproj" />
     <ProjectReference Include="..\PGHub.Domain\PGHub.Domain.csproj" />
   </ItemGroup>

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using PGHub.API.DTOs.Attachment;
-using PGHub.API.DTOs.Post;
+using PGHub.Common.DTOs.Attachment;
+using PGHub.Common.DTOs.Post;
 using PGHub.Domain.Entities;
 
-namespace PGHub.API.Profiles
+namespace PGHub.Common.Profiles
 {
     public class PostProfile : Profile
     {

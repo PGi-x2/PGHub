@@ -4,7 +4,7 @@ namespace PGHub.DataPersistance.Repositories
 {
     public interface IUsersRepository
     {
-        User? Find(Guid id);
+        Task<User?> FindAsync(Guid id);
         IEnumerable<User> GetAll();
         User Create(User user);
 

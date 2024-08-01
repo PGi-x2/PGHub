@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PGHub.API.DTOs.User;
+using PGHub.Application.Services;
+using PGHub.Common.DTOs.User;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
-using System.Collections.Generic;
 
-namespace PGHub.API.Controllers
+
+namespace PGHub.Common.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -16,28 +17,32 @@ namespace PGHub.API.Controllers
         private readonly IUsersRepository _usersRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<UsersController> _logger;
+        private readonly UsersService _usersService;
 
-        public UsersController(DataContext dataContext, IUsersRepository usersRepository, IMapper mapper, ILogger<UsersController> logger)
+        public UsersController(DataContext dataContext, IUsersRepository usersRepository, IMapper mapper, ILogger<UsersController> logger, UsersService usersService)
         {
             _dataContext = dataContext;
             _usersRepository = usersRepository;
             _mapper = mapper;
             _logger = logger;
+            _usersService = usersService;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var user = _usersRepository.Find(id);
+            var userDTO = await _usersService.GetByIdAsync(id);
+
+            //var user = await _usersRepository.Find(id);
 
             // TODO:To add validators to check if the user(guid) exists in the DB
-            if (user == null)
+            if (userDTO == null)
             {
                 return NotFound();
             }
 
             //UserDTO userDTO = _mapper.Map<UserDTO>(user);
-            var userDTO = _mapper.Map<UserDTO>(user);
+            //var userDTOBack = _mapper.Map<UserDTO>(userDTO);
 
             return Ok(userDTO);
         }
@@ -71,7 +76,7 @@ namespace PGHub.API.Controllers
             // CreatedAtAction is a method provided by ControllerBase 
             // CreatedAtAction returns a 201 status code with the location of the created resource
             // nameof operator is used to get the name of the GetById method as a string that will be used to genereate the URL for Location header
-            return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, userDTO);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = createdUser.Id }, userDTO);
         }
 
         [HttpPut("{id}")]

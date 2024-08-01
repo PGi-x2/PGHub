@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace PGHub.API.Controllers
+namespace PGHub.Common.Controllers
 {
     [ApiController]
     [Route("[controller]")]

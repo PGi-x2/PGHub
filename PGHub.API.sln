@@ -23,6 +23,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PGHub.DataPersistance", "PGHub.DataPersistance\PGHub.DataPersistance.csproj", "{E122DA14-25E2-4329-A058-F4CA5463615B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{5B2078DF-92EB-4ED1-9E23-362F4ED2B58E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PGHub.Common", "PGHub.Common\PGHub.Common.csproj", "{91589B87-9D1A-4F2E-9FA6-BD870BAB9676}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,10 @@ Global
 		{E122DA14-25E2-4329-A058-F4CA5463615B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E122DA14-25E2-4329-A058-F4CA5463615B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E122DA14-25E2-4329-A058-F4CA5463615B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91589B87-9D1A-4F2E-9FA6-BD870BAB9676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91589B87-9D1A-4F2E-9FA6-BD870BAB9676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91589B87-9D1A-4F2E-9FA6-BD870BAB9676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91589B87-9D1A-4F2E-9FA6-BD870BAB9676}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +62,7 @@ Global
 		{C334F5EE-168A-4286-9E39-804E4FEBB0D4} = {766CBA7D-5D32-4156-95BC-9E8145DAEA8A}
 		{52F720CF-7F00-48ED-B671-AFDA3C55D354} = {8775DCC4-3642-4705-A759-E58D5E1EE8DA}
 		{E122DA14-25E2-4329-A058-F4CA5463615B} = {6787B3B7-558B-49F8-B6C3-48E830973ED7}
+		{91589B87-9D1A-4F2E-9FA6-BD870BAB9676} = {5B2078DF-92EB-4ED1-9E23-362F4ED2B58E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87CD6740-BF1F-4342-AC1B-7737D7605CAB}
