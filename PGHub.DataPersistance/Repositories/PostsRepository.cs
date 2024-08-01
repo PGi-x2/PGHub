@@ -19,6 +19,7 @@ namespace PGHub.DataPersistance.Repositories
 
         public IEnumerable<Post> GetAll()
         {
+            // think for big results in order to retrieve first 100 results and then the rest, to be performant
             return _dataContext.Posts.Include(p => p.Attachments);
         }
 
