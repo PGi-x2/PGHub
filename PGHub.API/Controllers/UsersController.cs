@@ -31,12 +31,12 @@ namespace PGHub.Common.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var userDTO = await _usersService.GetByIdAsync(id);
+            var serviceUserDTO = await _usersService.GetByIdAsync(id);
 
             //var user = await _usersRepository.Find(id);
 
             // TODO:To add validators to check if the user(guid) exists in the DB
-            if (userDTO == null)
+            if (serviceUserDTO == null)
             {
                 return NotFound();
             }
@@ -44,18 +44,20 @@ namespace PGHub.Common.Controllers
             //UserDTO userDTO = _mapper.Map<UserDTO>(user);
             //var userDTOBack = _mapper.Map<UserDTO>(userDTO);
 
-            return Ok(userDTO);
+            return Ok(serviceUserDTO);
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var users = _usersRepository.GetAll();
+            var serviceUsersDTO = await _usersService.GetAllAsync();
+
+            //var users = await _usersRepository.GetAllAsync();
 
             // is it better to assign the value of the mapping to a variable or to return it directly?
             // better to assign the value of the mapping to a variable for better readability, debugging and testing and to perform necessary validation or manipulation before returning it
             // IEnumerable<UserDTO> usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
-            var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
+            var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(serviceUsersDTO);
 
             return Ok(usersDTO);
         }

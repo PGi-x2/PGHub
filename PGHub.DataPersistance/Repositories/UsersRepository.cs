@@ -1,4 +1,5 @@
-﻿using PGHub.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PGHub.Domain.Entities;
 
 namespace PGHub.DataPersistance.Repositories
 {
@@ -18,9 +19,9 @@ namespace PGHub.DataPersistance.Repositories
             return await _dataContext.Users.FindAsync(id);
         }
 
-        public IEnumerable<User> GetAll()
+        public async Task<List<User>> GetAllAsync()
         {
-            return _dataContext.Users;
+            return await _dataContext.Users.ToListAsync();
         }
 
         public User Create(User user)

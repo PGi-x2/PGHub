@@ -21,4 +21,11 @@ public class UsersService
 
         return _mapper.Map<UserDTO>(user);
     }
+
+    public async Task<List<UserDTO>> GetAllAsync()
+    {
+        var users = await _usersRepository.GetAllAsync();
+
+        return _mapper.Map<List<UserDTO>>(users);
+    }
 }
