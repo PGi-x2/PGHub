@@ -9,6 +9,9 @@ using PGHub.Domain.Entities;
 
 namespace PGHub.Common.Controllers
 {
+    /// <summary>
+    /// Controller for managing users.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -19,6 +22,14 @@ namespace PGHub.Common.Controllers
         private readonly ILogger<UsersController> _logger;
         private readonly UsersService _usersService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UsersController"/> class.
+        /// </summary>
+        /// <param name="dataContext">The data context.</param>
+        /// <param name="usersRepository">The users repository.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="logger">The logger.</param>
+        /// <param name="usersService">The users service.</param>
         public UsersController(DataContext dataContext, IUsersRepository usersRepository, IMapper mapper, ILogger<UsersController> logger, UsersService usersService)
         {
             _dataContext = dataContext;
@@ -28,12 +39,15 @@ namespace PGHub.Common.Controllers
             _usersService = usersService;
         }
 
+        /// <summary>
+        /// Gets a user by its ID, asynchronously.
+        /// </summary>
+        /// <param name="id">The ID of the user.</param>
+        /// <returns>Async Task of which result contains the user with the specified ID.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var serviceUserDTO = await _usersService.GetByIdAsync(id);
-
-            //var user = await _usersRepository.Find(id);
 
             // TODO:To add validators to check if the user(guid) exists in the DB
             if (serviceUserDTO == null)
@@ -41,18 +55,17 @@ namespace PGHub.Common.Controllers
                 return NotFound();
             }
 
-            //UserDTO userDTO = _mapper.Map<UserDTO>(user);
-            //var userDTOBack = _mapper.Map<UserDTO>(userDTO);
-
             return Ok(serviceUserDTO);
         }
 
+        /// <summary>
+        /// Gets all users, asynchronously.
+        /// </summary>
+        /// <returns>Async Task of which result contains all users.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var serviceUsersDTO = await _usersService.GetAllAsync();
-
-            //var users = await _usersRepository.GetAllAsync();
 
             // is it better to assign the value of the mapping to a variable or to return it directly?
             // better to assign the value of the mapping to a variable for better readability, debugging and testing and to perform necessary validation or manipulation before returning it
