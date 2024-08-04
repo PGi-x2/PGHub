@@ -6,9 +6,9 @@ namespace PGHub.DataPersistance.Repositories
     {
         Task<User?> FindAsync(Guid id);
         Task<List<User>> GetAllAsync();
-        User Create(User user);
+        Task<User> CreateAsync(User user);
 
-        User Update(User user);
+        Task<User> UpdateAsync(User user);
         bool Delete(Guid id);
     }
 }

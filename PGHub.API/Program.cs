@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using PGHub.Application.Services;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using System.Reflection;
@@ -12,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//Configure Swagger/OpenAPI
+// Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -31,8 +32,11 @@ builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(conne
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 
-// Add AutoMapper
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+// Add application services
+builder.Services.AddScoped<IUsersService, UsersService>();
+
+// Add custom services
+builder.Services.AddAutoMapper(typeof(Program).Assembly); // Add AutoMapper for mapping between DTOs and entities
 
 
 // Example: Add MediatR for handling CQRS patterns
@@ -40,9 +44,6 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Example: Add FluentValidation for model validation
 // builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
-
-// Example: Add a custom service
-// builder.Services.AddScoped<IMyCustomService, MyCustomService>();
 
 var app = builder.Build();
 

@@ -24,15 +24,15 @@ namespace PGHub.DataPersistance.Repositories
             return await _dataContext.Users.ToListAsync();
         }
 
-        public User Create(User user)
+        public async Task<User> CreateAsync(User user)
         {
-            _dataContext.Users.Add(user);
-            _dataContext.SaveChanges();
+            await _dataContext.Users.AddAsync(user);
+            await _dataContext.SaveChangesAsync();
 
             return user;
         }
 
-        public User Update(User user)
+        public async Task<User> UpdateAsync(User user)
         {
             // Check if the guid exists in the DB
             var userDb = _dataContext.Users.Find(user.Id);

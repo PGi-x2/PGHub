@@ -1,5 +1,6 @@
 ﻿namespace PGHub.Common.DTOs.User
 {
+    // Output DTO
     public class UserDTO
     {
         public Guid Id { get; set; }
