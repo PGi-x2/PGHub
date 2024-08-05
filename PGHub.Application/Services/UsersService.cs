@@ -54,4 +54,9 @@ public class UsersService : IUsersService
         // return _mapper.Map<UserDTO>(updatedUser);
         return await GetByIdAsync(updatedUser.Id);
     }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        return await _usersRepository.DeleteAsync(id);
+    }
 }

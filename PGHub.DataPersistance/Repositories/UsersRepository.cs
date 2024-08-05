@@ -53,15 +53,15 @@ namespace PGHub.DataPersistance.Repositories
             return user;
         }
 
-        public bool Delete(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
 
-            var user = _dataContext.Users.Find(id);
+            var user = await _dataContext.Users.FindAsync(id);
 
             if (user != null)
             {
                 _dataContext.Users.Remove(user);
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
                 return true;
             }
 

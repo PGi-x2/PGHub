@@ -10,9 +10,7 @@ using PGHub.Domain.Entities;
 
 namespace PGHub.Common.Controllers
 {
-    /// <summary>
-    /// Controller for managing users.
-    /// </summary>
+    /// <summary>Controller for managing users.</summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -59,9 +57,7 @@ namespace PGHub.Common.Controllers
             return Ok(serviceUserDTO);
         }
 
-        /// <summary>
-        /// Gets all users, asynchronously.
-        /// </summary>
+        /// <summary>Gets all users, asynchronously.</summary>
         /// <returns>Async Task of which result contains all users.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -82,17 +78,16 @@ namespace PGHub.Common.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserDTO createUserDTO)
         {
-            // How can I also retrieve the id of the created user from DB without mapping it from the DTO?
             var serviceUser = await _usersService.CreateAsync(createUserDTO);
 
             if (serviceUser == null)
             {
                 return StatusCode(500, "An error occured while creating the user.");
             }
-            return CreatedAtAction(nameof(GetById), new { id = serviceUser.Id }, serviceUser);
             // CreatedAtAction is a method provided by ControllerBase 
             // CreatedAtAction returns a 201 status code with the location of the created resource
-            // nameof operator is used to get the name of the GetById method as a string that will be used to genereate the URL for Location header        
+            // nameof operator is used to get the name of the GetById method as a string that will be used to genereate the URL for Location header 
+            return CreatedAtAction(nameof(GetById), new { id = serviceUser.Id }, serviceUser);      
         }
 
         /// <summary>Updates an existing user, asynchronously.</summary>
@@ -107,14 +102,12 @@ namespace PGHub.Common.Controllers
             {
                 return BadRequest(ModelState);
             }
-            // Mapping from UpdateUserDTO to User
-            //var userEntity = _mapper.Map<User>(updateUserDTO);
+
             try
             {
-                // Update the user in the DB via the repository
                 var updatedUser = await _usersService.UpdateAsync(id, updateUserDTO);
 
-                // TODO: need to cath the null guid when is the case
+                // TODO: need to catch the null guid when is the case
                 if (updatedUser == null)
                 {
                     return NotFound();
@@ -130,16 +123,17 @@ namespace PGHub.Common.Controllers
             }
         }
 
-        //Hard Delete
+        /// <summary>Deletes a user by its ID, asynchronously.</summary>
+        /// <param name="id">The ID of the user to delete.</param>
+        /// <returns>An <see cref="IActionResult"/> that contains the result of the delete operation.</returns>
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             bool isDeleted;
 
             try
             {
-                // assign the value of the user repository to this user variable
-                isDeleted = _usersRepository.Delete(id);
+                isDeleted = await _usersService.DeleteAsync(id);
 
                 if (isDeleted == false)
                 {
