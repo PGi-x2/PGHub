@@ -1,3 +1,4 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -12,8 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 // Add controllers to the container.
-builder.Services.AddControllers()
-    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateUserDTOValidator>()); // Add FluentValidation for model validation
+builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation(); // Add FluentValidation for automatic validation
+builder.Services.AddFluentValidationClientsideAdapters(); // Add FluentValidation for client-side validation
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDTOValidator>(); // Add FluentValidation registers all validators in the assembly containing CreateUserDTOValidator
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // Configure Swagger/OpenAPI
