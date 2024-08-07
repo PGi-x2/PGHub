@@ -38,9 +38,7 @@ namespace PGHub.Common.Controllers
             _usersService = usersService;
         }
 
-        /// <summary>
-        /// Gets a user by its ID, asynchronously.
-        /// </summary>
+        /// <summary>Gets a user by its ID, asynchronously.</summary>
         /// <param name="id">The ID of the user.</param>
         /// <returns>Async Task of which result contains the user with the specified ID.</returns>
         [HttpGet("{id}")]
@@ -78,6 +76,12 @@ namespace PGHub.Common.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserDTO createUserDTO)
         {
+            // Validate the input data
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var serviceUser = await _usersService.CreateAsync(createUserDTO);
 
             if (serviceUser == null)
