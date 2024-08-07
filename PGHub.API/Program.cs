@@ -49,7 +49,7 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly); // Add AutoMapper for 
 // builder.Services.AddMediatR(typeof(Program).Assembly);
 
 // Example: Add FluentValidation for model validation
-// builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+// builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);  -> Deprecated
 
 var app = builder.Build();
 

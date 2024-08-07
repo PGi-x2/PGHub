@@ -21,14 +21,11 @@ namespace PGHub.Common.Controllers
         private readonly ILogger<UsersController> _logger;
         private readonly IUsersService _usersService;
 
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UsersController"/> class.
         /// </summary>
-        /// <param name="dataContext">The data context.</param>
-        /// <param name="usersRepository">The users repository.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="logger">The logger.</param>
-        /// <param name="usersService">The users service.</param>
         public UsersController(DataContext dataContext, IUsersRepository usersRepository, IMapper mapper, ILogger<UsersController> logger, IUsersService usersService)
         {
             _dataContext = dataContext;
