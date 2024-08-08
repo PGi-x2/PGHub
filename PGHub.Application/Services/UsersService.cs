@@ -30,6 +30,14 @@ public class UsersService : IUsersService
         return _mapper.Map<List<UserDTO>>(users);
     }
 
+    public async Task<IReadOnlyCollection<UserDTO>> GetAll2Async()
+    {
+        var users = await _usersRepository.GetAllAsync();
+
+        return _mapper.Map<List<UserDTO>>(users);
+    }
+
+
     public async Task<UserDTO> CreateAsync(CreateUserDTO createUserDTO)
     {
         // Mapping from CreateUserDTO to User entity

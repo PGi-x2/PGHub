@@ -2,13 +2,19 @@
 {
     public class ApiResponse<T>
     {
-        public string Message { get; set; }
-        public T Data { get; set; }
+        public string Message { get; }
+        public T Data { get; }
+        public int StatusCode { get; }
 
-        public ApiResponse(string message, T data)
+        private ApiResponse(string message, T data, int statusCode)
         {
             Message = message;
             Data = data;
+            StatusCode = statusCode;
+        }
+        public static ApiResponse<T> SuccesResult(T data, string message, int statusCode = 200)
+        {
+            return new ApiResponse<T>(message, data, statusCode);
         }
     }
 }

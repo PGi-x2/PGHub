@@ -35,6 +35,8 @@ namespace PGHub.Common.Controllers
             _usersService = usersService;
         }
 
+
+
         /// <summary>Gets a user by its ID, asynchronously.</summary>
         /// <param name="id">The ID of the user.</param>
         /// <returns>Async Task of which result contains the user with the specified ID.</returns>
@@ -49,6 +51,8 @@ namespace PGHub.Common.Controllers
                 return NotFound();
             }
 
+            var response = ApiResponse<UserDTO>.SuccesResult(serviceUserDTO, "message");
+
             return Ok(serviceUserDTO);
         }
 
@@ -57,7 +61,7 @@ namespace PGHub.Common.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var serviceUsersDTO = await _usersService.GetAllAsync();
+            var serviceUsersDTO = await _usersService.GetAll2Async();
 
             // is it better to assign the value of the mapping to a variable or to return it directly?
             // better to assign the value of the mapping to a variable for better readability, debugging and testing and to perform necessary validation or manipulation before returning it
