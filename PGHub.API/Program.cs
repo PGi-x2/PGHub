@@ -3,7 +3,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PGHub.Application.Services;
-using PGHub.Common.DTOs.User.Validators;
+using PGHub.Application.DTOs.User.Validators;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using System.Reflection;

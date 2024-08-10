@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using PGHub.DataPersistance.Repositories;
-using PGHub.Common.DTOs.User;
+using PGHub.Application.DTOs.User;
 using PGHub.Domain.Entities;
 
 namespace PGHub.Application.Services;
@@ -23,20 +23,12 @@ public class UsersService : IUsersService
         return _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<List<UserDTO>> GetAllAsync()
+    public async Task<IReadOnlyCollection<UserDTO>> GetAllAsync()
     {
         var users = await _usersRepository.GetAllAsync();
 
-        return _mapper.Map<List<UserDTO>>(users);
+        return _mapper.Map<IReadOnlyCollection<UserDTO>>(users);
     }
-
-    public async Task<IReadOnlyCollection<UserDTO>> GetAll2Async()
-    {
-        var users = await _usersRepository.GetAllAsync();
-
-        return _mapper.Map<List<UserDTO>>(users);
-    }
-
 
     public async Task<UserDTO> CreateAsync(CreateUserDTO createUserDTO)
     {

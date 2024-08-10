@@ -1,4 +1,4 @@
-﻿namespace PGHub.Common.DTOs.Attachment
+﻿namespace PGHub.Application.DTOs.Attachment
 {
     public class AttachmentDTO
     {

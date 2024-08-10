@@ -35,14 +35,14 @@ namespace PGHub.DataPersistance.Repositories
         public async Task<User> UpdateAsync(User user)
         {
             // Check if the guid exists in the DB
-            var userDb = _dataContext.Users.Find(user.Id);
+            var userDb = await _dataContext.Users.FindAsync(user.Id);
 
             if (userDb != null)
             {
                 // Entry(userDb).CurrentValues gets the current property values from the entity / db
                 // SetValues(user) will update the values of userDb with the values from user
                 _dataContext.Entry(userDb).CurrentValues.SetValues(user);
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
             }
             else
             {

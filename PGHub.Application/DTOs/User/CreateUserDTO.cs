@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PGHub.Common.DTOs.User
+namespace PGHub.Application.DTOs.User
 {
     public class CreateUserDTO
     {

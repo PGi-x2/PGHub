@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace PGHub.Common.DTOs.User.Validators
+namespace PGHub.Application.DTOs.User.Validators
 {
-    public class CreateUserDTOValidator : AbstractValidator<CreateUserDTO>
+    public class UpdateUserDTOValidator : AbstractValidator<UpdateUserDTO>
     {
-        public CreateUserDTOValidator()
+        public UpdateUserDTOValidator()
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required.")

@@ -1,4 +1,4 @@
-﻿namespace PGHub.Common.DTOs.User
+﻿namespace PGHub.Application.DTOs.User
 {
     // Output DTO
     public class UserDTO

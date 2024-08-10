@@ -1,10 +1,10 @@
-﻿using PGHub.Common.DTOs.Attachment;
+﻿using PGHub.Application.DTOs.Attachment;
 
-namespace PGHub.Common.DTOs.Post
+namespace PGHub.Application.DTOs.Post
 {
-    public class CreatePostDTO
+    public class UpdatePostDTO
     {
-        public CreatePostDTO()
+        public UpdatePostDTO()
         {
             Attachments = new List<AttachmentDTO>();
         }
@@ -13,8 +13,8 @@ namespace PGHub.Common.DTOs.Post
         public string Title { get; set; }
         public string Body { get; set; }
         public bool IsPined { get; set; }
-        public DateTime CreationDate { get; set; }
-        // public DateTime DeletionDate { get; set; }
+        // public DateTime CreationDate { get; set; }
+        public DateTime DeletionDate { get; set; }
         public List<AttachmentDTO> Attachments { get; set; }
     }
 }

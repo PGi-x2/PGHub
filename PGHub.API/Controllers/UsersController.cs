@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PGHub.Application.Services;
-using PGHub.Common.DTOs.User;
+using PGHub.Application.DTOs.User;
 using PGHub.Common.Responses;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
@@ -21,8 +21,6 @@ namespace PGHub.Common.Controllers
         private readonly ILogger<UsersController> _logger;
         private readonly IUsersService _usersService;
 
-
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UsersController"/> class.
         /// </summary>
@@ -34,8 +32,6 @@ namespace PGHub.Common.Controllers
             _logger = logger;
             _usersService = usersService;
         }
-
-
 
         /// <summary>Gets a user by its ID, asynchronously.</summary>
         /// <param name="id">The ID of the user.</param>
@@ -61,14 +57,9 @@ namespace PGHub.Common.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var serviceUsersDTO = await _usersService.GetAll2Async();
+            var serviceUsersDTO = await _usersService.GetAllAsync();
 
-            // is it better to assign the value of the mapping to a variable or to return it directly?
-            // better to assign the value of the mapping to a variable for better readability, debugging and testing and to perform necessary validation or manipulation before returning it
-            // IEnumerable<UserDTO> usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
-            var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(serviceUsersDTO);
-
-            return Ok(usersDTO);
+            return Ok(serviceUsersDTO);
         }
 
         /// <summary>Creates a user, asynchronously.</summary>
@@ -92,7 +83,7 @@ namespace PGHub.Common.Controllers
             // CreatedAtAction is a method provided by ControllerBase 
             // CreatedAtAction returns a 201 status code with the location of the created resource
             // nameof operator is used to get the name of the GetById method as a string that will be used to genereate the URL for Location header 
-            return CreatedAtAction(nameof(GetById), new { id = serviceUser.Id }, serviceUser);      
+            return CreatedAtAction(nameof(GetById), new { id = serviceUser.Id }, serviceUser);
         }
 
         /// <summary>Updates an existing user, asynchronously.</summary>

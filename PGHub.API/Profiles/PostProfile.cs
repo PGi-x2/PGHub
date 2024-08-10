@@ -1,32 +1,24 @@
 ﻿using AutoMapper;
-using PGHub.Common.DTOs.Attachment;
-using PGHub.Common.DTOs.Post;
+using PGHub.Application.DTOs.Attachment;
+using PGHub.Application.DTOs.Post;
 using PGHub.Domain.Entities;
 
-namespace PGHub.Common.Profiles
+namespace PGHub.Application.Profiles
 {
     public class PostProfile : Profile
     {
         public PostProfile()
         {
-            // Used for GetById
+            // Define the mapping from Post domain model to PostDTO and vice versa
             CreateMap<Post, PostDTO>()
-                .ForMember(dest => dest.Attachments, opt => opt.MapFrom(src => src.Attachments));
-            CreateMap<PostDTO, Post>()
-                .ForMember(dest => dest.Attachments, opt => opt.MapFrom(src => src.Attachments));
+                .ForMember(dest => dest.Attachments, opt => opt.MapFrom(src => src.Attachments))
+                .ReverseMap();
 
-            // Map between Attachment and AttachmentDTO
-            CreateMap<Attachment, AttachmentDTO>();
-            CreateMap<AttachmentDTO, Attachment>();
+            CreateMap<Attachment, AttachmentDTO>().ReverseMap();
 
-            // Used for CreatePost
-            CreateMap<CreatePostDTO, Post>();
-            CreateMap<Post, CreatePostDTO>();
+            CreateMap<CreatePostDTO, Post>().ReverseMap();
 
-            // Used for UpdatePost
-            CreateMap<UpdatePostDTO, Post>();
-            CreateMap<Post, UpdatePostDTO>();
-
+            CreateMap<UpdatePostDTO, Post>().ReverseMap();
         }
     }
 }
