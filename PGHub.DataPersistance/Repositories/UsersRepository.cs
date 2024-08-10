@@ -14,7 +14,7 @@ namespace PGHub.DataPersistance.Repositories
         }
 
         // ? is used to indicate that the return type can be null
-        public async Task<User?> FindAsync(Guid id)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
             return await _dataContext.Users.FindAsync(id);
         }

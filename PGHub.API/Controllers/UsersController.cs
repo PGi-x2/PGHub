@@ -5,7 +5,6 @@ using PGHub.Application.DTOs.User;
 using PGHub.Common.Responses;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
-using PGHub.Domain.Entities;
 
 
 namespace PGHub.Common.Controllers
@@ -47,9 +46,10 @@ namespace PGHub.Common.Controllers
                 return NotFound();
             }
 
-            var response = ApiResponse<UserDTO>.SuccesResult(serviceUserDTO, "message");
+            // TODO: Move all the messages to a resource / constants file
+            var response = APIResponse<UserDTO>.SuccesResult("User retrieved successfully.", serviceUserDTO);
 
-            return Ok(serviceUserDTO);
+            return Ok(response);
         }
 
         /// <summary>Gets all users, asynchronously.</summary>

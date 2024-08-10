@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PGHub.Common.DTOs.Post;
+using PGHub.Application.DTOs.Post;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
