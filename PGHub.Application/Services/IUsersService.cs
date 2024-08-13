@@ -1,13 +1,14 @@
 ﻿using PGHub.Application.DTOs.User;
+using PGHub.Common.Responses;
 
 namespace PGHub.Application.Services
 {
     public interface IUsersService
     {
+        Task<APIResponse<UserDTO>> GetByIdAsync(Guid id);
         Task<IReadOnlyCollection<UserDTO>> GetAllAsync();
-        Task<UserDTO> GetByIdAsync(Guid id);
-        Task<UserDTO> CreateAsync(CreateUserDTO createUserDTO);
-        Task<UserDTO> UpdateAsync(Guid id, UpdateUserDTO updateUserDTO);
+        Task<APIResponse<UserDTO>> CreateAsync(CreateUserDTO createUserDTO);
+        Task<APIResponse<UserDTO>> UpdateAsync(Guid id, UpdateUserDTO updateUserDTO);
         Task<bool> DeleteAsync(Guid id);
     }
 }

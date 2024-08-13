@@ -2,6 +2,7 @@
 using PGHub.DataPersistance.Repositories;
 using PGHub.Application.DTOs.User;
 using PGHub.Domain.Entities;
+using PGHub.Common.Responses;
 
 namespace PGHub.Application.Services;
 
@@ -16,7 +17,7 @@ public class UsersService : IUsersService
         _mapper = mapper;
     }
 
-    public async Task<UserDTO> GetByIdAsync(Guid id)
+    public async Task<APIResponse<UserDTO>> GetByIdAsync(Guid id)
     {
         try
         {
@@ -25,10 +26,11 @@ public class UsersService : IUsersService
             if (user == null)
             {
                 // TODO: Add logging and return message by using APIResponse class
-                   return null;
+                var response = APIResponse<UserDTO>.NotFound("User not found.", null);
+                return response;
             }
 
-            return _mapper.Map<UserDTO>(user);
+            return _mapper.Map<APIResponse<UserDTO>>(user);
         }
         catch (Exception ex)
         {
@@ -40,12 +42,21 @@ public class UsersService : IUsersService
 
     public async Task<IReadOnlyCollection<UserDTO>> GetAllAsync()
     {
-        var users = await _usersRepository.GetAllAsync();
+        try
+        {
+            var users = await _usersRepository.GetAllAsync();
 
-        return _mapper.Map<IReadOnlyCollection<UserDTO>>(users);
+            return _mapper.Map<IReadOnlyCollection<UserDTO>>(users);
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+        
     }
 
-    public async Task<UserDTO> CreateAsync(CreateUserDTO createUserDTO)
+    public async Task<APIResponse<UserDTO>> CreateAsync(CreateUserDTO createUserDTO)
     {
         // Mapping from CreateUserDTO to User entity
         var user = _mapper.Map<User>(createUserDTO);
@@ -55,7 +66,7 @@ public class UsersService : IUsersService
         return await GetByIdAsync(createdUser.Id);
     }
 
-    public async Task<UserDTO> UpdateAsync(Guid id, UpdateUserDTO updateUserDTO)
+    public async Task<APIResponse<UserDTO>> UpdateAsync(Guid id, UpdateUserDTO updateUserDTO)
     {
         // Mapping from UpdateUserDTO to User entity
         var user = _mapper.Map<User>(updateUserDTO);
