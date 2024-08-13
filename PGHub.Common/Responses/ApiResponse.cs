@@ -27,5 +27,10 @@
         {
             return new APIResponse<T>(message, false, data, statusCode);
         }
+
+        public static APIResponse<T> InternalServerError(string message, T data, int statusCode = 500)
+        {
+            return new APIResponse<T>(message, false, data, statusCode);
+        }
     }
 }

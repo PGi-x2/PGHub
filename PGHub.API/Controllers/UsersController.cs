@@ -38,18 +38,27 @@ namespace PGHub.Common.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var serviceUserDTO = await _usersService.GetByIdAsync(id);
-
-            // TODO:To add validators to check if the user(guid) / email exists in the DB
-            if (serviceUserDTO == null)
+            try
             {
-                return NotFound();
+                var serviceUserDTO = await _usersService.GetByIdAsync(id);
+
+                // TODO:To add validators to check if the user(guid) / email exists in the DB
+                if (serviceUserDTO == null)
+                {
+                    return NotFound(APIResponse<UserDTO>.NotFound("User not found.", null));
+                }
+
+                // TODO: Move all the messages to a resource / constants file
+                var response = APIResponse<UserDTO>.SuccesResult("User retrieved successfully.", serviceUserDTO);
+                
+                return Ok(response);
             }
-
-            // TODO: Move all the messages to a resource / constants file
-            var response = APIResponse<UserDTO>.SuccesResult("User retrieved successfully.", serviceUserDTO);
-
-            return Ok(response);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving the user with the ID: {UserId}", id + ".");
+                var response = APIResponse<UserDTO>.InternalServerError("An error occurred while retrieving the user.", null);
+                return StatusCode(500, "An error occurred while retrieving the user.");
+            }  
         }
 
         /// <summary>Gets all users, asynchronously.</summary>
@@ -114,7 +123,7 @@ namespace PGHub.Common.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError(ex, "An error occurred while updating the user with the ID: {UserId}", id);
+                _logger.LogError(ex, "An error occurred while updating the user with the ID: {UserId}", id + ".");
                 return StatusCode(500, "An error occurred while updating the user.");
             }
         }
