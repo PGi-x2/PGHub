@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using PGHub.Application.Exceptions;
 using System.Net;
 
 namespace PGHub.Application.Middleware
@@ -16,33 +16,66 @@ namespace PGHub.Application.Middleware
             _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
 
             try
             {
-                await _next(context);
+                await _next(httpContext);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while processing the request.");
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(httpContext, ex);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            httpContext.Response.ContentType = "application/json";
 
-            var response = new
+            switch (exception)
             {
-                StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error. Please try again later.",
-                ExceptionMessage = exception.Message // Optional
-            };
-
-            return context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                case BadRequestException badRequestException:
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await httpContext.Response.WriteAsJsonAsync(new
+                    {
+                        // infer the type of the object
+                        httpContext.Response.StatusCode,
+                        badRequestException.Message
+                    });
+                    _logger.LogError(badRequestException.Message);
+                    break;
+                case NotFoundException notFoundException:
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                    await httpContext.Response.WriteAsJsonAsync(new
+                    {
+                        // infer the type of the object
+                        httpContext.Response.StatusCode,
+                        notFoundException.Message
+                    });
+                    _logger.LogError(notFoundException.Message);
+                    break;
+                case ValidationException validationException:
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await httpContext.Response.WriteAsJsonAsync(new
+                    {
+                        // infer the type of the object
+                        httpContext.Response.StatusCode,
+                        validationException.Errors
+                    });
+                    _logger.LogError(validationException.Message);
+                    break;
+                default:
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    await httpContext.Response.WriteAsJsonAsync(new
+                    {
+                        // infer the type of the object
+                        httpContext.Response.StatusCode,
+                        Message = "An error occurred while processing the request."
+                    });
+                    _logger.LogError(exception.Message);
+                    break;
+            }
         }
     }
 }

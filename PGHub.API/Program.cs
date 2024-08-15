@@ -7,6 +7,7 @@ using PGHub.Application.DTOs.User.Validators;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using System.Reflection;
+using PGHub.Application.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add controllers to the container.
 builder.Services.AddControllers();
+builder.Services.AddLogging(); 
 builder.Services.AddFluentValidationAutoValidation(); // Add FluentValidation for automatic validation
 builder.Services.AddFluentValidationClientsideAdapters(); // Add FluentValidation for client-side validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDTOValidator>(); // Add FluentValidation registers all validators in the assembly containing CreateUserDTOValidator
@@ -60,6 +62,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     //app.UseDeveloperExceptionPage(); // This line is commented out to avoid showing the developer exception page
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

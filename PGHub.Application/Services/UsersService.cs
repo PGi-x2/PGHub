@@ -18,41 +18,27 @@ public class UsersService : IUsersService
 
     public async Task<UserDTO> GetByIdAsync(Guid id)
     {
-        try
-        {
-            var user = await _usersRepository.GetByIdAsync(id);
+        var user = await _usersRepository.GetByIdAsync(id);
 
-            if (user == null)
-            {
-                // TODO: Add logging and return message by using APIResponse class
-                   return null;
-            }
-
-            return _mapper.Map<UserDTO>(user);
-        }
-        catch (Exception ex)
+        if (user == null)
         {
-            throw;
+            // TODO: return message by using APIResponse class
+            return null;
         }
+
+        return _mapper.Map<UserDTO>(user);
     }
 
     public async Task<IReadOnlyCollection<UserDTO>> GetAllAsync()
     {
-        try
-        {
-            var users = await _usersRepository.GetAllAsync();
+        var users = await _usersRepository.GetAllAsync();
 
-            if (users == null)
-            {
-                return null;
-            }
-
-            return _mapper.Map<IReadOnlyCollection<UserDTO>>(users);
-        }
-        catch (Exception ex)
+        if (users == null)
         {
-            throw;
+            return null;
         }
+
+        return _mapper.Map<IReadOnlyCollection<UserDTO>>(users);
     }
 
     public async Task<UserDTO> CreateAsync(CreateUserDTO createUserDTO)

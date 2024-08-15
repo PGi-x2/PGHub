@@ -55,6 +55,7 @@ namespace PGHub.Common.Controllers
             }
             catch (Exception ex)
             {
+                // TODO: Still needed if we have the ExceptionHandlingMiddleware????
                 _logger.LogError(ex, "An error occurred while retrieving the user with the ID: {UserId}", id + ".");
                 var response = APIResponse<UserDTO>.InternalServerError("An error occurred while retrieving the user.", null);
                 return StatusCode(500, "An error occurred while retrieving the user.");
