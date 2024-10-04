@@ -26,40 +26,50 @@ namespace PGHub.DataPersistance.Repositories
 
         public async Task<User> CreateAsync(User user)
         {
-            await _dataContext.Users.AddAsync(user);
-            await _dataContext.SaveChangesAsync();
+            // Begin transaction
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                await _dataContext.Users.AddAsync(user);
+                await _dataContext.SaveChangesAsync();
+
+                // Commit the transaction if all the operations succeeded
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("An error occurred while creating the user.", ex);
+            }
 
             return user;
         }
 
-        public async Task<User> UpdateAsync(User user)
+        public async Task<User?> UpdateAsync(User user)
         {
-            // Check if the guid exists in the DB
+            // Check if the GUID exists in the DB
             var userDb = await _dataContext.Users.FindAsync(user.Id);
 
-            if (userDb != null)
+            if (userDb == null)
             {
-                try
-                {
-                    if (userDb != null)
-                    {
-                        // Entry(userDb).CurrentValues gets the current property values from the entity / db
-                        // SetValues(user) will update the values of userDb with the values from user
-                        _dataContext.Entry(userDb).CurrentValues.SetValues(user);
-                        await _dataContext.SaveChangesAsync();
-                    }
-                }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-                
-            }
-            else
-            {
-                // need to improve this
                 return null;
+            }
+
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Entry(userDb).CurrentValues gets the current property values from the entity / db
+                // SetValues(user) will update the values of userDb with the values from user
+                _dataContext.Entry(userDb).CurrentValues.SetValues(user);
+                await _dataContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("An error occurred while updating the user.", ex);
             }
 
             return user;
@@ -67,17 +77,29 @@ namespace PGHub.DataPersistance.Repositories
 
         public async Task<bool> DeleteAsync(Guid id)
         {
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
 
-            var user = await _dataContext.Users.FindAsync(id);
+            
 
-            if (user != null)
+            try
             {
-                _dataContext.Users.Remove(user);
-                await _dataContext.SaveChangesAsync();
-                return true;
-            }
+                var user = await _dataContext.Users.FindAsync(id);
 
-            return false;
+                if (user != null)
+                {
+                    _dataContext.Users.Remove(user);
+                    await _dataContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("An error occurred while deleting the user.", ex);
+            }
         }
     }
 }
