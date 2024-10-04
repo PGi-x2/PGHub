@@ -39,10 +39,22 @@ namespace PGHub.DataPersistance.Repositories
 
             if (userDb != null)
             {
-                // Entry(userDb).CurrentValues gets the current property values from the entity / db
-                // SetValues(user) will update the values of userDb with the values from user
-                _dataContext.Entry(userDb).CurrentValues.SetValues(user);
-                await _dataContext.SaveChangesAsync();
+                try
+                {
+                    if (userDb != null)
+                    {
+                        // Entry(userDb).CurrentValues gets the current property values from the entity / db
+                        // SetValues(user) will update the values of userDb with the values from user
+                        _dataContext.Entry(userDb).CurrentValues.SetValues(user);
+                        await _dataContext.SaveChangesAsync();
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+                
             }
             else
             {
