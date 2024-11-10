@@ -40,8 +40,6 @@ namespace PGHub.DataPersistance.Repositories
             {
                 await _dataContext.Users.AddAsync(user);
                 await _dataContext.SaveChangesAsync();
-
-                // Commit the transaction if all the operations succeeded
                 await transaction.CommitAsync();
             }
             catch (Exception ex)
@@ -58,23 +56,23 @@ namespace PGHub.DataPersistance.Repositories
         /// <returns>An <see cref="Task{User?}"/> that contains the result of the updated user.</returns>
         public async Task<User?> UpdateAsync(User user)
         {
-            // Check if the GUID exists in the DB
-            var userDb = await _dataContext.Users.FindAsync(user.Id);
-
-            if (userDb == null)
-            {
-                return null;
-            }
-
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
 
             try
             {
-                // Entry(userDb).CurrentValues gets the current property values from the entity / db
-                // SetValues(user) will update the values of userDb with the values from user
-                _dataContext.Entry(userDb).CurrentValues.SetValues(user);
-                await _dataContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                // Check if the GUID exists in the DB
+                var userDb = await _dataContext.Users.FindAsync(user.Id);
+
+                if (userDb != null)
+                {
+                    // Entry(userDb).CurrentValues gets the current property values from the entity / db
+                    // SetValues(user) will update the values of userDb with the values from user
+                    _dataContext.Entry(userDb).CurrentValues.SetValues(user);
+                    await _dataContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return user;
+                }
+                return null;
             }
             catch (Exception ex)
             {
@@ -108,6 +106,22 @@ namespace PGHub.DataPersistance.Repositories
             {
                 await transaction.RollbackAsync();
                 throw new Exception("An error occurred while deleting the user.", ex);
+            }
+        }
+
+        /// <summary>Verifies the uniqueness of a mail.</summary>
+        /// <param name="email"></param>
+        /// <returns>A boolean (true or false).</returns>
+        public Task<bool> UniqueEmail(string email, CancellationToken cancellationToken)
+        {
+            // TBD: Validation didn't worked either with this method Async or not
+            try
+            {
+                return _dataContext.Users.AnyAsync(u => u.Email == email);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while checking if the email exists.", ex);
             }
         }
     }

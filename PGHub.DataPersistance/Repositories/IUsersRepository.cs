@@ -10,5 +10,6 @@ namespace PGHub.DataPersistance.Repositories
 
         Task<User?> UpdateAsync(User user);
         Task<bool> DeleteAsync(Guid id);
+        Task<bool> UniqueEmail(string email, CancellationToken cancellationToken);
     }
 }
