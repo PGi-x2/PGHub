@@ -7,7 +7,7 @@ using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 
 
-namespace PGHub.Common.Controllers
+namespace PGHub.API.Controllers
 {
     /// <summary>Controller for managing users.</summary>
     [Route("api/[controller]")]
@@ -50,7 +50,7 @@ namespace PGHub.Common.Controllers
 
                 // TODO: Move all the messages to a resource / constants file
                 var response = APIResponse<UserDTO>.SuccesResult("User retrieved successfully.", serviceUserDTO);
-                
+
                 return Ok(response);
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace PGHub.Common.Controllers
                 _logger.LogError(ex, "An error occurred while retrieving the user with the ID: {UserId}", id + ".");
                 var response = APIResponse<UserDTO>.InternalServerError("An error occurred while retrieving the user.", null);
                 return StatusCode(500, "An error occurred while retrieving the user.");
-            }  
+            }
         }
 
         /// <summary>Gets all users, asynchronously.</summary>

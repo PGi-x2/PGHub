@@ -5,7 +5,7 @@ using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
 
-namespace PGHub.Common.Controllers
+namespace PGHub.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
