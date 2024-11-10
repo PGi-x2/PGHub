@@ -34,7 +34,7 @@ namespace PGHub.API.Controllers
 
         /// <summary>Gets a user by its ID, asynchronously.</summary>
         /// <param name="id">The ID of the user.</param>
-        /// <returns>Async Task of which result contains the user with the specified ID.</returns>
+        /// <returns> An <see cref="Task{IActionResult}"/> async of which result contains the user with the specified ID.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -63,7 +63,7 @@ namespace PGHub.API.Controllers
         }
 
         /// <summary>Gets all users, asynchronously.</summary>
-        /// <returns>Async Task of which result contains all users.</returns>
+        /// <returns>An <see cref="Task{IActionResult}"/> async of which result contains all users.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -74,7 +74,7 @@ namespace PGHub.API.Controllers
 
         /// <summary>Creates a user, asynchronously.</summary>
         /// <param name="createUserDTO">Represents a DTO that contains the necessary properties for creating user.</param>
-        /// <returns>An <see cref="IActionResult"/> that contains the result of the create operation.</returns>
+        /// <returns>An <see cref="Task{IActionResult}"/> that contains the result of the create operation.</returns>
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserDTO createUserDTO)
         {
@@ -99,7 +99,7 @@ namespace PGHub.API.Controllers
         /// <summary>Updates an existing user, asynchronously.</summary>
         /// <param name="id">The ID of the user to update.</param>
         /// <param name="updateUserDTO">The DTO containing the updated user information.</param>
-        /// <returns>An <see cref="IActionResult"/> that contains the result of the update operation.</returns>
+        /// <returns>An <see cref="Task{IActionResult}"/> that contains the result of the update operation.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateUserDTO updateUserDTO)
         {
@@ -131,7 +131,7 @@ namespace PGHub.API.Controllers
 
         /// <summary>Deletes a user by its ID, asynchronously.</summary>
         /// <param name="id">The ID of the user to delete.</param>
-        /// <returns>An <see cref="IActionResult"/> that contains the result of the delete operation.</returns>
+        /// <returns>An <see cref="Task{IActionResult}"/> that contains the result of the delete operation (true or false).</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
