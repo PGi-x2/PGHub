@@ -4,10 +4,13 @@ namespace PGHub.DataPersistance.Repositories
 {
     public interface IPostsRepository
     {
-        Post Create(Post post);
-        bool Delete(Guid id);
-        Post? Find(Guid id);
-        IEnumerable<Post> GetAll();
-        Post Update(Post post);
+        Task<Post?> GetById(Guid id);
+        Task<List<Post>> GetAllAsync(int pageNumber, int pageSize);
+        Task<Post> CreateAsync(Post post);
+        Task<Post?> UpdateAsync(Post post);
+        Task<bool> DeleteAsync(Guid id);
+        
+        
+        
     }
 }

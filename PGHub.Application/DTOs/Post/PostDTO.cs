@@ -7,6 +7,8 @@ namespace PGHub.Application.DTOs.Post
         public PostDTO()
         {
             Attachments = new List<AttachmentDTO>();
+            Title = string.Empty;
+            Body = string.Empty;
         }
         public Guid Id { get; set; }
         public Guid AuthorId { get; set; }

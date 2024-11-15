@@ -41,14 +41,14 @@ namespace PGHub.DataPersistance.Repositories
                 await _dataContext.Users.AddAsync(user);
                 await _dataContext.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+                return user;
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
                 throw new Exception("An error occurred while creating the user.", ex);
             }
-
-            return user;
         }
 
         /// <summary>Updates an existing user, asynchronously.</summary>
@@ -83,7 +83,7 @@ namespace PGHub.DataPersistance.Repositories
 
         /// <summary>Deletes a user by its ID, asynchronously.</summary>
         /// <param name="id">The ID of the user to delete.</param>
-        /// <returns>An <see cref="Task{bool}"/> that contains the result of the delete operation (true or false).</returns>
+        /// <returns>An <see cref="Task{bool}"/> that indicates whether the post was deleted or not.</returns>
         public async Task<bool> DeleteAsync(Guid id)
         {
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
