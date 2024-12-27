@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using PGHub.Application.DTOs.User;
 using PGHub.DataPersistance.Repositories;
 
 namespace PGHub.Application.DTOs.User.Validators
@@ -17,7 +18,7 @@ namespace PGHub.Application.DTOs.User.Validators
                 .EmailAddress().WithMessage("Invalid email format.")
                 .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage("Email must have a valid domain (e.g., .com, .ro, etc.).")
                 .Matches(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$").WithMessage("Invalid email format.");
-                //.MustAsync(UniqueEmail).WithMessage("Email already exists.");
+            //.MustAsync(UniqueEmail).WithMessage("Email already exists.");
 
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")

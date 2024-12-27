@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using PGHub.Application.DTOs.User;
 
 namespace PGHub.Application.DTOs.User.Validators
 {
@@ -12,7 +13,7 @@ namespace PGHub.Application.DTOs.User.Validators
                 .MaximumLength(100).WithMessage("Email must be less than 100 characters long.")
                 .EmailAddress().WithMessage("Invalid email format.")
                 .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage("Email must have a valid domain (e.g., .com, .ro, etc.).")
-                .Matches(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$").WithMessage("Invalid email format.");    
+                .Matches(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$").WithMessage("Invalid email format.");
 
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PGHub.Application.DTOs.Post;
+using PGHub.Application.Services;
+using PGHub.Common.Responses;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using PGHub.Domain.Entities;
@@ -16,18 +18,21 @@ namespace PGHub.API.Controllers
         private readonly IPostsRepository _postsRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<PostsRepository> _logger;
+        private readonly IPostsService _postsService;
 
         /// <summary> </summary>
         /// <param name="dataContext"></param>
         /// <param name="postsRepository"></param>
         /// <param name="mapper"></param>
         /// <param name="logger"></param>
-        public PostsController(DataContext dataContext, IPostsRepository postsRepository, IMapper mapper, ILogger<PostsRepository> logger)
+        /// <param name="postsService"></param>
+        public PostsController(DataContext dataContext, IPostsRepository postsRepository, IMapper mapper, ILogger<PostsRepository> logger, IPostsService postsService)
         {
             _dataContext = dataContext;
             _postsRepository = postsRepository;
             _mapper = mapper;
             _logger = logger;
+            _postsService = postsService;
         }
 
         /// <summary>Gets a post by its ID, asynchronously.</summary>
@@ -36,29 +41,34 @@ namespace PGHub.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var post = await _dataContext.Posts.FindAsync(id);
-
-            // TODO:To add validators to check if the post(guid) exists in the DB
-            if (post == null)
+            try
             {
-                return NotFound();
+                var postServiceDTO = await _postsService.GetByIdAsync(id);
+
+                // TODO:To add validators to check if the post(guid) exists in the DB
+                if (postServiceDTO == null)
+                {
+                    return NotFound(APIResponse<PostDTO>.NotFound("Post not found.", null));
+                }
+
+                var response = APIResponse<PostDTO>.SuccesResult("Post retrieved successfully.", postServiceDTO);
+
+                return Ok(response);
             }
-
-            // This maps the properties of the post object to a new instance of the PostDTO class.
-            // Maps the properties from domain entity to the DTO object that can be displayed to the client
-            var postDTO = _mapper.Map<PostDTO>(post);
-
-            return Ok(postDTO);
+            catch (Exception)
+            {
+                _logger.LogError("An error occurred while retrieving the post with the ID: {PostId}", id + ".");
+                var response = APIResponse<PostDTO>.InternalServerError("An error occurred while retrieving the post.", null);
+                return StatusCode(500, "An error occurred while retrieving the post.");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll(int pageNumber, int pageSize)
         {
-            var posts = await _postsRepository.GetAllAsync(pageNumber, pageSize);
+            var postsServiceDTO = await _postsService.GetAllAsync(pageNumber, pageSize);
 
-            var postDTO = _mapper.Map<IEnumerable<PostDTO>>(posts);
-
-            return Ok(postDTO);
+            return Ok(postsServiceDTO);
         }
 
 

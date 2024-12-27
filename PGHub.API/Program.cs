@@ -3,11 +3,11 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PGHub.Application.Services;
-using PGHub.Application.DTOs.User.Validators;
 using PGHub.DataPersistance;
 using PGHub.DataPersistance.Repositories;
 using System.Reflection;
 using PGHub.Application.Middleware;
+using PGHub.Application.DTOs.User.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
