@@ -42,6 +42,7 @@ builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 
 // Add application services
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IPostsService, PostsService>();
 
 // Add custom services
 builder.Services.AddAutoMapper(typeof(Program).Assembly); // Add AutoMapper for mapping between DTOs and entities

@@ -4,10 +4,10 @@ namespace PGHub.Application.Services
 {
     public interface IPostsService
     {
-        Task<PostDTO> CreateAsync(PostDTO postDto);
-        Task<bool> DeleteAsync(Guid id);
-        Task<IReadOnlyCollection<PostDTO>> GetAllAsync(int pageNumber, int pageSize);
         Task<PostDTO> GetByIdAsync(Guid id);
-        Task<PostDTO> UpdateAsync(PostDTO postDto);
+        Task<IReadOnlyCollection<PostDTO>> GetAllAsync(int pageNumber, int pageSize);
+        Task<PostDTO> CreateAsync(CreatePostDTO postDto);
+        Task<PostDTO> UpdateAsync(Guid id, UpdatePostDTO postDto);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

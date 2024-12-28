@@ -56,7 +56,7 @@ namespace PGHub.API.Controllers
             catch (Exception ex)
             {
                 // TODO: Still needed if we have the ExceptionHandlingMiddleware????
-                _logger.LogError(ex, "An error occurred while retrieving the user with the ID: {UserId}", id + ".");
+                //_logger.LogError(ex, "An error occurred while retrieving the user with the ID: {UserId}", id + ".");
                 var response = APIResponse<UserDTO>.InternalServerError("An error occurred while retrieving the user.", null);
                 return StatusCode(500, "An error occurred while retrieving the user.");
             }
@@ -67,13 +67,21 @@ namespace PGHub.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var serviceUsersDTO = await _usersService.GetAllAsync();
+            try
+            {
+                var serviceUsersDTO = await _usersService.GetAllAsync();
 
-            return Ok(serviceUsersDTO);
+                return Ok(serviceUsersDTO);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error ocurred while retrieving all users", ex);
+            }
+            
         }
 
         /// <summary>Creates a user, asynchronously.</summary>
-        /// <param name="createUserDTO">Represents a DTO that contains the necessary properties for creating user.</param>
+        /// <param name="createUserDTO">Represents a DTO that contains the necessary properties for creating a user.</param>
         /// <returns>An <see cref="Task{IActionResult}"/> that contains the result of the create operation.</returns>
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserDTO createUserDTO)
@@ -124,7 +132,7 @@ namespace PGHub.API.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError(ex, "An error occurred while updating the user with the ID: {UserId}", id + ".");
+                //_logger.LogError(ex, "An error occurred while updating the user with the ID: {UserId}", id + ".");
                 return StatusCode(500, "An error occurred while updating the user.");
             }
         }
@@ -154,7 +162,7 @@ namespace PGHub.API.Controllers
             catch (Exception ex)
             {
                 // Log the exception
-                _logger.LogError(ex, "An error occured while deleting the user with the ID: {UserId}", id + ".");
+                //_logger.LogError(ex, "An error occured while deleting the user with the ID: {UserId}", id + ".");
 
                 // Return a 500 status code to be more specific
                 return StatusCode(500, "An error occured while deleting the user.");

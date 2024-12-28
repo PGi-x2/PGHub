@@ -24,7 +24,7 @@ namespace PGHub.Application.Services
             //_logger.LogInformation("Starting GetByIdAsync for post ID {PostId}", id + ".");
             try
             {
-                var post = await _postsRepository.GetById(id);
+                var post = await _postsRepository.GetByIdAsync(id);
                 if (post == null)
                 {
                     //_logger.LogWarning("Post with ID {PostId} not found", id + ".");
@@ -58,12 +58,20 @@ namespace PGHub.Application.Services
             }
         }
 
-        public async Task<PostDTO> CreateAsync(PostDTO postDto)
+        //TODO: Add feature to support multiple attachments for one post
+        public async Task<PostDTO> CreateAsync(CreatePostDTO postDto)
         {
             //_logger.LogInformation("Starting CreateAsync for post with title {PostTitle}", postDto.Title + ".");
             try
             {
                 var post = _mapper.Map<Post>(postDto);
+
+                // Map the attachments from DTO to the Post entity
+                post.Attachments = postDto.Attachments.Select(a => new Attachment
+                {
+                    FileName = a.FileName
+                }).ToList();
+
                 var createdPost = await _postsRepository.CreateAsync(post);
 
                 //_logger.LogInformation("Successfully created post with title {PostTitle}", postDto.Title);
@@ -76,18 +84,28 @@ namespace PGHub.Application.Services
             }
         }
 
-        public async Task<PostDTO> UpdateAsync(PostDTO postDto)
+        //TODO: Add feature to support multiple updates on attachments for one post
+        public async Task<PostDTO> UpdateAsync(Guid id, UpdatePostDTO updatePostDTO)
         {
             //_logger.LogInformation("Starting UpdateAsync for post with ID {PostId}", postDto.Id + ".");
             try
             {
-                var post = _mapper.Map<Post>(postDto);
-                var updatedPost = await _postsRepository.UpdateAsync(post);
+                var post = _mapper.Map<Post>(updatePostDTO);
+
+                // Retrieve the existing post from the repository
+                var existingPost = await _postsRepository.GetByIdAsync(id);
+
+                if (existingPost == null)
+                {
+                    throw new Exception ("Post doesn't exist or not found.");
+                }
+
+                var updatedPost = await _postsRepository.UpdateAsync(id, post);
 
                 if (updatedPost == null)
                 {
                     //_logger.LogWarning("Post with ID {PostId} not found for update", postDto.Id + ".");
-                    return null;
+                    throw new Exception("Couldn't update the post due to unexpected error.");
                 }
 
                 //_logger.LogInformation("Successfully updated post with ID {PostId}", postDto.Id);
@@ -96,7 +114,7 @@ namespace PGHub.Application.Services
             catch (Exception ex)
             {
                 //_logger.LogError(ex, "An error occurred while updating the post with the ID: {PostId}", postDto.Id + ".");
-                throw new Exception("An error occurred while updating the post with the ID: {PostId}" + postDto.Id + ".", ex);
+                throw new Exception("An error occurred while updating the post.", ex);
             }
         }
 

@@ -57,69 +57,100 @@ namespace PGHub.API.Controllers
             }
             catch (Exception)
             {
-                _logger.LogError("An error occurred while retrieving the post with the ID: {PostId}", id + ".");
+                //_logger.LogError("An error occurred while retrieving the post with the ID: {PostId}", id + ".");
                 var response = APIResponse<PostDTO>.InternalServerError("An error occurred while retrieving the post.", null);
-                return StatusCode(500, "An error occurred while retrieving the post.");
+                return StatusCode(500, response);
             }
         }
 
+        /// <summary>Gets all posts, asynchronously.</summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns>An <see cref="Task{IActionResult}"/> async of which result contains all posts.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll(int pageNumber, int pageSize)
         {
-            var postsServiceDTO = await _postsService.GetAllAsync(pageNumber, pageSize);
+            try
+            {
+                var postsService = await _postsService.GetAllAsync(pageNumber, pageSize);
 
-            return Ok(postsServiceDTO);
+                var response = APIResponse<IReadOnlyCollection<PostDTO>>.SuccesResult("Posts retrieved successfully.", postsService);
+
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                var response = APIResponse<IReadOnlyCollection<PostDTO>>.InternalServerError("An error occurred while retrieving all posts.", null);
+                return StatusCode(500, response);
+            }
         }
 
-
+        /// <summary>Creates a new post, asynchronously.</summary>
+        /// <param name="createPostDTO">Represents a DTO that contains the necessary properties for creating a post.</param>
+        /// <returns>An <see cref="Task{IActionResult}"/> that contains the result of the create operation.</returns>
         [HttpPost]
-        public async Task<IActionResult> Create(CreatePostDTO createPostDTO)
+        public async Task<IActionResult> Create([FromBody] CreatePostDTO createPostDTO)
         {
-            // Maps the properties from the DTO object to the domain entity
-            var post = _mapper.Map<Post>(createPostDTO);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            // Creates the post in the database / repository
-            var createdPost = await _postsRepository.CreateAsync(post);
+            try
+            {
+                var postsService = await _postsService.CreateAsync(createPostDTO);
 
-            // TODO: Need to return this via the GetById Method that will have the mapping from domain entity to DTO
-            // Maps the properties from the domain entity back to the DTO object to return it in the response
-            var postDTO = _mapper.Map<PostDTO>(createdPost);
+                if (postsService == null)
+                {
+                    return BadRequest("An error occurred while creating the post.");
+                }
 
-            return CreatedAtAction(nameof(GetById), new { id = createdPost.Id }, postDTO);
+                return CreatedAtAction(nameof(GetById), new { id = postsService.Id }, postsService);
+            }
+            catch (Exception)
+            {
+                //_logger.LogError("An error occurred while creating the post with the title: {PostTitle}", createPostDTO.Title + ".");
+                var response = APIResponse<PostDTO>.InternalServerError("An error occurred while creating the post.", null);
+                return StatusCode(500, response);
+            }
         }
 
+        /// <summary>Updates an existing post, asynchronously.</summary>
+        /// <param name="id">The ID of the post to update.</param>
+        /// <param name="updatePostDTO">The DTO containing the updated post information.</param>
+        /// <returns>An <see cref="Task{IActionResult}"/> that contains the result of the update operation.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdatePostDTO updatePostDTO)
         {
-            // Retrieve the existing post from the repository
-            var existingPost = await _postsRepository.GetById(id);
-            if (existingPost == null)
+            // Validate the input data
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            _mapper.Map(updatePostDTO, existingPost);
-
-            // Clear the existing attachments and add the new ones
-            existingPost.Attachments.Clear();
-            foreach (var attachmentDTO in updatePostDTO.Attachments)
+            try
             {
-                existingPost.Attachments.Add(new Attachment
+                // Retrieve the existing post from the repository
+                var updatedPost = await _postsService.UpdateAsync(id, updatePostDTO);
+
+                if (updatedPost == null)
                 {
-                    FileName = attachmentDTO.FileName,
-                    //Id = attachmentDTO.Id,
-                });
+                    return NotFound();
+                }
+
+                return Ok(updatedPost);
+            }
+            catch (Exception)
+            {
+                var response = APIResponse<PostDTO>.InternalServerError("An error occurred while updating the post.", null);
+                return StatusCode(500, response);
             }
 
-            // Update the post in the DB via the repository
-            var updatedPost = await _postsRepository.UpdateAsync(existingPost);
-
-            // Map back from Post entity to UpdatePostDto to return it in the response / client
-            var postDTO = _mapper.Map<UpdatePostDTO>(updatedPost);
-
-            return Ok(postDTO);
         }
 
+        /// <summary>Deletes a post by its ID, asynchronously.</summary>
+        /// <param name="id">The ID of the post to delete.</param>
+        /// <returns>An <see cref="Task{IActionResult}"/> that contains the result of the delete operation (true or false).</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -140,11 +171,10 @@ namespace PGHub.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while deleting the post with the ID: {PostId}", id + ".");
-
-                return StatusCode(500, "An error occured while deleting the post.");
+                //_logger.LogError(ex, "An error occured while deleting the post with the ID: {PostId}", id + ".");
+                var response = APIResponse<PostDTO>.InternalServerError("An error occurred while deleting the post.", null);
+                return StatusCode(500, response);
             }
         }
-
     }
 }

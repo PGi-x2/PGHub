@@ -14,9 +14,9 @@ namespace PGHub.DataPersistance.Repositories
         /// <summary>Gets a post by its ID, asynchronously.</summary>
         /// <param name="id">The ID of the post.</param>
         /// <returns>An <see cref="Task{Post?}"/> async of which result contains the post with the specified ID.</returns>
-        public async Task<Post?> GetById(Guid id)
+        public async Task<Post?> GetByIdAsync(Guid id)
         {
-            return await _dataContext.Posts.FindAsync(id);
+            return await _dataContext.Posts.Include(p => p.Attachments).FirstOrDefaultAsync(p => p.Id == id);
         }
 
         /// <summary>Gets all posts, asynchronously.</summary>
@@ -57,17 +57,29 @@ namespace PGHub.DataPersistance.Repositories
         /// <summary>Updates an existing post, asynchronously.</summary>
         /// <param name="post">The post object that contains all the mapped informations about the post.</param>
         /// <returns>An <see cref="Task{Post}"/> that contains the result of the updated post.</returns>
-        public async Task<Post?> UpdateAsync(Post post)
+        public async Task<Post?> UpdateAsync(Guid id, Post post)
         {
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
 
             try
             {
-                var postDb = _dataContext.Posts.Find(post.Id);
+                var postDb = _dataContext.Posts.Find(id);
 
                 if (postDb != null)
                 {
                     // postDb.Attachments.Clear();
+                    post.Id = id;
+
+                    // Clear the existing attachments and add the new ones
+                    post.Attachments.Clear();
+                    foreach (var attachmentDTO in post.Attachments)
+                    {
+                        post.Attachments.Add(new Attachment
+                        {
+                            FileName = attachmentDTO.FileName,
+                            //Id = attachmentDTO.Id,
+                        });
+                    }
                     _dataContext.Entry(postDb).CurrentValues.SetValues(post);
                     await _dataContext.SaveChangesAsync();
                     await transaction.CommitAsync();
